@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="MyBaseTests.cs" />
     <Compile Include="BackstagePassTests.cs" />
+    <Compile Include="ConjuredItemsTests.cs" />
     <Compile Include="SulfurasTests.cs" />
     <Compile Include="AgedBrieTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GildedRose.Console
 {
@@ -45,16 +46,20 @@ namespace GildedRose.Console
 
     private void UpdateQualityForItem(Item item)
     {
-      if (item.Name != "Aged Brie" && item.Name != "Backstage passes to a TAFKAL80ETC concert")
-        UpdateReqularItemQuality(item);
-      else
-        UpdateIrregularItemQuality(item);
-
+      UpdateItemQuality(item);
 
       DecreaseSellIn(item);
 
       AdjustQuality_SellIn_ZeroOrLess(item);
 
+    }
+
+    private static void UpdateItemQuality(Item item)
+    {
+      if (item.Name != "Aged Brie" && item.Name != "Backstage passes to a TAFKAL80ETC concert")
+        UpdateReqularItemQuality(item);
+      else
+        UpdateIrregularItemQuality(item);
     }
 
     private static void AdjustQuality_SellIn_ZeroOrLess(Item item)
@@ -117,7 +122,12 @@ namespace GildedRose.Console
     {
       if (item.Quality > 0)
       {
-        if (item.Name != "Sulfuras, Hand of Ragnaros")
+        if (item.Name == "Sulfuras, Hand of Ragnaros")
+          return;
+
+        if (item.Name == "Conjured Mana Cake")
+          item.Quality = Math.Max(0, item.Quality - 2);
+        else
         {
           item.Quality = item.Quality - 1;
         }
