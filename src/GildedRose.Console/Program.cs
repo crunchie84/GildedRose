@@ -2,9 +2,9 @@
 
 namespace GildedRose.Console
 {
-    class Program
+    public class Program
     {
-        IList<Item> Items;
+        public IList<Item> Items;
         static void Main(string[] args)
         {
             System.Console.WriteLine("OMGHAI!");
@@ -25,7 +25,6 @@ namespace GildedRose.Console
                                                   },
                                               new Item {Name = "Conjured Mana Cake", SellIn = 3, Quality = 6}
                                           }
-
                           };
 
             app.UpdateQuality();
