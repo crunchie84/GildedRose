@@ -23,7 +23,7 @@ namespace GildedRose.Tests
     [TestCase(1, 0, "1-2 = 0 (min value)")]
     public void UpdateQuality_ShouldDecrease_Quality_TwiceAsFast_As_RegularItems(int initialQuality, int expectedQuality, string message)
     {
-      program.Items.Add(new Item { Name = "Conjured Mana Cake", SellIn = 3, Quality = initialQuality });
+      program.Items.Add(new RegularItem { Name = "Conjured Mana Cake", SellIn = 3, Quality = initialQuality });
 
       program.UpdateQuality();
 
@@ -36,7 +36,7 @@ namespace GildedRose.Tests
     [TestCase(0, -1, "0-1 = -1")]
     public void UpdateQuality_ShouldDecrease_SellIn_RegularPace(int initialSellin, int expectedResultSellIn, string message)
     {
-      program.Items.Add(new Item { Name = "Conjured Mana Cake", SellIn = initialSellin, Quality = 20 });
+      program.Items.Add(new RegularItem { Name = "Conjured Mana Cake", SellIn = initialSellin, Quality = 20 });
 
       program.UpdateQuality();
 

@@ -22,7 +22,7 @@ namespace GildedRose.Tests
     [Test]
     public void UpdateQuality_ShouldNever_Decrease_SellIn()
     {
-      program.Items.Add(new Item {Name = "Sulfuras, Hand of Ragnaros", SellIn = 0, Quality = 80});
+      program.Items.Add(new RegularItem {Name = "Sulfuras, Hand of Ragnaros", SellIn = 0, Quality = 80});
 
       program.UpdateQuality();
 
@@ -32,7 +32,7 @@ namespace GildedRose.Tests
     [Test]
     public void UpdateQuality_ShouldNever_Decrease_Quality()
     {
-      program.Items.Add(new Item { Name = "Sulfuras, Hand of Ragnaros", SellIn = 0, Quality = 80 });
+      program.Items.Add(new RegularItem { Name = "Sulfuras, Hand of Ragnaros", SellIn = 0, Quality = 80 });
 
       program.UpdateQuality();
 

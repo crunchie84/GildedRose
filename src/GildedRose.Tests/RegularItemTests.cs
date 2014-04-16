@@ -33,7 +33,7 @@ namespace GildedRose.Tests
     [Test(Description = "At the end of each day our system lowers both values for every item")]
     public void UpdateQuality_ShouldDecrease_Quality()
     {
-        program.Items.Add(new Item { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
+        program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
 
         program.UpdateQuality();
 
@@ -43,7 +43,7 @@ namespace GildedRose.Tests
     [Test(Description = "At the end of each day our system lowers both values for every item")]
     public void UpdateQuality_ShouldDecrease_SellIn()
     {
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
 
       program.UpdateQuality();
 
@@ -53,8 +53,8 @@ namespace GildedRose.Tests
     [Test]
     public void UpdateQuality_MultipleItems_ShouldAll_DecreaseQuality()
     {
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest 2", SellIn = 10, Quality = 20 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest 2", SellIn = 10, Quality = 20 });
 
       program.UpdateQuality();
       Assert.AreEqual(19, program.Items.First().Quality);
@@ -64,8 +64,8 @@ namespace GildedRose.Tests
     [Test]
     public void UpdateQuality_MultipleItems_ShouldAll_DecreseSellIn()
     {
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest 2", SellIn = 10, Quality = 20 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest 1", SellIn = 10, Quality = 20 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest 2", SellIn = 10, Quality = 20 });
 
       program.UpdateQuality();
 
@@ -76,7 +76,7 @@ namespace GildedRose.Tests
     [Test(Description = "The Quality of an item is never negative")]
     public void Quality_Becomes_NeverNegative()
     {
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest", SellIn = 10, Quality = 1 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest", SellIn = 10, Quality = 1 });
 
       program.UpdateQuality();
       program.UpdateQuality();
@@ -88,7 +88,7 @@ namespace GildedRose.Tests
     [Test(Description = "ASSERTION - The Sellin of an item is never negative")]
     public void SellIn_Becomes_NeverNegative()
     {
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest", SellIn = 1, Quality = 10 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest", SellIn = 1, Quality = 10 });
       program.UpdateQuality();//sellin = 0 
       program.UpdateQuality();// sellin y u no -1?
 
@@ -99,7 +99,7 @@ namespace GildedRose.Tests
     [Test(Description = "Once the sell by date has passed, Quality degrades twice as fast")]
     public void ExpirationPassed_QualityDegradesTwiceAsFast()
     {
-      program.Items.Add(new Item { Name = "+5 Dexterity Vest", SellIn = 0, Quality = 20 });
+      program.Items.Add(new RegularItem { Name = "+5 Dexterity Vest", SellIn = 0, Quality = 20 });
       program.UpdateQuality();
       Assert.AreEqual(18, program.Items.Last().Quality);
     }

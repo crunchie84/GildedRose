@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GildedRose.Console
 {
@@ -15,7 +16,7 @@ namespace GildedRose.Console
                       Items = new List<Item>
                                           {
                                               new Item {Name = "+5 Dexterity Vest", SellIn = 10, Quality = 20},
-                                              new Item {Name = "Aged Brie", SellIn = 2, Quality = 0},
+                                              new Item{Name = "Aged Brie", SellIn = 2, Quality = 0},
                                               new Item {Name = "Elixir of the Mongoose", SellIn = 5, Quality = 7},
                                               new Item {Name = "Sulfuras, Hand of Ragnaros", SellIn = 0, Quality = 80},
                                               new Item
@@ -24,7 +25,7 @@ namespace GildedRose.Console
                                                       SellIn = 15,
                                                       Quality = 20
                                                   },
-                                              new Item {Name = "Conjured Mana Cake", SellIn = 3, Quality = 6}
+                                              new ConjuredItem {Name = "Conjured Mana Cake", SellIn = 3, Quality = 6}
                                           }
                     };
 
@@ -36,112 +37,123 @@ namespace GildedRose.Console
 
     public void UpdateQuality()
     {
-      for (var i = 0; i < Items.Count; i++)
+      //fixup borked items by making them regular items
+      Items = Items
+        .Where(item => item.GetType() == typeof (Item))
+        .Select(item =>
+        {
+          switch (item.Name)
+          {
+            case "Aged Brie":
+              return new AgedItem {Name = item.Name, Quality = item.Quality, SellIn = item.SellIn} as Item;
+            case "Sulfuras, Hand of Ragnaros":
+              return new LegendaryItem {Name = item.Name, Quality = item.Quality, SellIn = item.SellIn} as Item;
+            case "Backstage passes to a TAFKAL80ETC concert":
+              return new FixedDateItem { Name = item.Name, Quality = item.Quality, SellIn = item.SellIn } as Item;
+            case "Conjured Mana Cake":
+              return new ConjuredItem { Name = item.Name, Quality = item.Quality, SellIn = item.SellIn } as Item;
+            default:
+              return new RegularItem { Name = item.Name, Quality = item.Quality, SellIn = item.SellIn } as Item;
+          }
+        }).ToList();
+
+      //now let all items calculate their value
+      Items = Items.OfType<CalculateAbleItemWrapper>()
+        .Select(item =>
       {
-        var item = Items[i];
-
-        UpdateQualityForItem(item);
-      }
+        item.CalculateNextDayValues();
+        return item;
+      }).Cast<Item>().ToList();
     }
 
-    private void UpdateQualityForItem(Item item)
+    private void UpdateQualityForItem(RegularItem regularItem)
     {
-      UpdateItemQuality(item);
+      UpdateItemQuality(regularItem);
 
-      DecreaseSellIn(item);
+      DecreaseSellIn(regularItem);
 
-      AdjustQuality_SellIn_ZeroOrLess(item);
+      AdjustQuality_SellIn_ZeroOrLess(regularItem);
 
     }
 
-    private static void UpdateItemQuality(Item item)
+    private static void UpdateItemQuality(RegularItem regularItem)
     {
-      if (item.Name != "Aged Brie" && item.Name != "Backstage passes to a TAFKAL80ETC concert")
-        UpdateReqularItemQuality(item);
+      if (regularItem.Name != "Aged Brie" && regularItem.Name != "Backstage passes to a TAFKAL80ETC concert")
+        UpdateReqularItemQuality(regularItem);
       else
-        UpdateIrregularItemQuality(item);
+        UpdateIrregularItemQuality(regularItem);
     }
 
-    private static void AdjustQuality_SellIn_ZeroOrLess(Item item)
+    private static void AdjustQuality_SellIn_ZeroOrLess(RegularItem regularItem)
     {
-      if (item.SellIn >= 0) return;
+      if (regularItem.SellIn >= 0) return;
 
-      if (item.Name == "Aged Brie")
+      if (regularItem.Name == "Aged Brie")
       {
-        if (item.Quality < 50)
+        if (regularItem.Quality < 50)
         {
-          item.Quality = item.Quality + 1;
+          regularItem.Quality = regularItem.Quality + 1;
         }
       }
-      else if (item.Name == "Backstage passes to a TAFKAL80ETC concert")
+      else if (regularItem.Name == "Backstage passes to a TAFKAL80ETC concert")
       {
-        item.Quality = item.Quality - item.Quality;
+        regularItem.Quality = regularItem.Quality - regularItem.Quality;
       }
-      else if (item.Quality > 0 && item.Name != "Sulfuras, Hand of Ragnaros")
+      else if (regularItem.Quality > 0 && regularItem.Name != "Sulfuras, Hand of Ragnaros")
       {
-        item.Quality = item.Quality - 1;
-      }
-    }
-
-    private static void DecreaseSellIn(Item item)
-    {
-      if (item.Name != "Sulfuras, Hand of Ragnaros")
-      {
-        item.SellIn = item.SellIn - 1;
+        regularItem.Quality = regularItem.Quality - 1;
       }
     }
 
-    private static void UpdateIrregularItemQuality(Item item)
+    private static void DecreaseSellIn(RegularItem regularItem)
     {
-      if (item.Quality < 50)
+      if (regularItem.Name != "Sulfuras, Hand of Ragnaros")
       {
-        item.Quality = item.Quality + 1;
+        regularItem.SellIn = regularItem.SellIn - 1;
+      }
+    }
 
-        if (item.Name == "Backstage passes to a TAFKAL80ETC concert")
+    private static void UpdateIrregularItemQuality(RegularItem regularItem)
+    {
+      if (regularItem.Quality < 50)
+      {
+        regularItem.Quality = regularItem.Quality + 1;
+
+        if (regularItem.Name == "Backstage passes to a TAFKAL80ETC concert")
         {
-          if (item.SellIn < 11)
+          if (regularItem.SellIn < 11)
           {
-            if (item.Quality < 50)
+            if (regularItem.Quality < 50)
             {
-              item.Quality = item.Quality + 1;
+              regularItem.Quality = regularItem.Quality + 1;
             }
           }
 
-          if (item.SellIn < 6)
+          if (regularItem.SellIn < 6)
           {
-            if (item.Quality < 50)
+            if (regularItem.Quality < 50)
             {
-              item.Quality = item.Quality + 1;
+              regularItem.Quality = regularItem.Quality + 1;
             }
           }
         }
       }
     }
 
-    private static void UpdateReqularItemQuality(Item item)
+    private static void UpdateReqularItemQuality(RegularItem regularItem)
     {
-      if (item.Quality > 0)
+      if (regularItem.Quality > 0)
       {
-        if (item.Name == "Sulfuras, Hand of Ragnaros")
+        if (regularItem.Name == "Sulfuras, Hand of Ragnaros")
           return;
 
-        if (item.Name == "Conjured Mana Cake")
-          item.Quality = Math.Max(0, item.Quality - 2);
+        if (regularItem.Name == "Conjured Mana Cake")
+          regularItem.Quality = Math.Max(0, regularItem.Quality - 2);
         else
         {
-          item.Quality = item.Quality - 1;
+          regularItem.Quality = regularItem.Quality - 1;
         }
       }
     }
   }
-
-  public class Item
-  {
-    public string Name { get; set; }
-
-    public int SellIn { get; set; }
-
-    public int Quality { get; set; }
-  }
-
 }

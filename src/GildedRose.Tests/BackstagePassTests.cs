@@ -33,7 +33,7 @@ namespace GildedRose.Tests
     [TestCase(0, 48, 0, "sellIn passed thus quality goes to 0")]
     public void BackStagePass_SellInApproaches_ShouldIncrease_Quality(int sellIn, int initialQuality, int expectedResultQuality, string message)
     {
-      program.Items.Add(new Item { Name = "Backstage passes to a TAFKAL80ETC concert", SellIn = sellIn, Quality = initialQuality });
+      program.Items.Add(new RegularItem { Name = "Backstage passes to a TAFKAL80ETC concert", SellIn = sellIn, Quality = initialQuality });
 
       program.UpdateQuality();
 
